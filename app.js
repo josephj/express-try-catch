@@ -70,4 +70,32 @@ app.get("/error-async-await", async (req, res, next) => {
   console.log(data);
 });
 
-app.listen(process.env.PORT || 3000, () => console.log("Example app listening on port 3000!"));
+const throwError = () => {
+  throw new Error("Something wrong");
+};
+const saveUser = () => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve("User Saved!");
+    }, 1000);
+  });
+};
+// .then doesn't need to use try-catch
+app.get("/user/save/then", (req, res, next) => {
+  throwError();
+  saveUser().then(msg => res.send(msg));
+});
+// async-await need to use try-catch
+app.get("/user/save/async", async (req, res, next) => {
+  try {
+    throw new Error();
+    const msg = await saveUser();
+    res.send(msg);
+  } catch (e) {
+    next(e);
+  }
+});
+
+app.listen(process.env.PORT || 3000, () =>
+  console.log("Example app listening on port 3000!")
+);
