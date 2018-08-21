@@ -75,20 +75,20 @@ const throwError = () => {
 };
 const saveUser = () => {
   return new Promise(resolve => {
-    setTimeout(() => {
-      resolve("User Saved!");
-    }, 1000);
+    setTimeout(() => resolve("User Saved!"), 1000);
   });
 };
 // .then doesn't need to use try-catch
 app.get("/user/save/then", (req, res, next) => {
   throwError();
-  saveUser().then(msg => res.send(msg));
+  saveUser()
+    .then(msg => res.send(msg))
+    .catch(e => next(e));
 });
-// async-await need to use try-catch
+// async-await needs to use try-catch
 app.get("/user/save/async", async (req, res, next) => {
   try {
-    throw new Error();
+    throwError();
     const msg = await saveUser();
     res.send(msg);
   } catch (e) {
